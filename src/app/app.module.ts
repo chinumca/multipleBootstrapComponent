@@ -1,16 +1,37 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ApplicationRef, ComponentFactoryResolver, DoBootstrap, Inject, NgModule, Type } from '@angular/core';
 
 import { AppComponent } from './app.component';
+import { BppComponent } from './bpp/bpp.component';
+import { DOCUMENT } from '@angular/common';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    BppComponent
   ],
   imports: [
     BrowserModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  entryComponents:[AppComponent,BppComponent]
+  // bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule implements DoBootstrap {
+  static bootstrapComponents: Type<{}>[] = [AppComponent, BppComponent];
+
+  constructor(
+      @Inject(DOCUMENT) private _document: any,
+      private _componentFactoryResolver: ComponentFactoryResolver
+  ) { }
+
+  ngDoBootstrap(applicationRef: ApplicationRef) {
+      for (const component of AppModule.bootstrapComponents) {
+          const { selector } = this._componentFactoryResolver.resolveComponentFactory(component);
+
+          if (this._document.querySelector(selector)) {
+              applicationRef.bootstrap(component);
+          }
+      }
+  }
+}
