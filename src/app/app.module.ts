@@ -1,10 +1,8 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { ApplicationRef, ComponentFactoryResolver, DoBootstrap, Inject, NgModule, Type } from '@angular/core';
+import { ApplicationRef, NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
-import { BppComponent } from './bpp/bpp.component';
-import { DOCUMENT } from '@angular/common';
-
+import {BppComponent} from './bpp/bpp.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -14,24 +12,16 @@ import { DOCUMENT } from '@angular/common';
     BrowserModule
   ],
   providers: [],
-  entryComponents:[AppComponent,BppComponent]
+  entryComponents:[BppComponent,AppComponent]
   // bootstrap: [AppComponent]
 })
-export class AppModule implements DoBootstrap {
-  static bootstrapComponents: Type<{}>[] = [AppComponent, BppComponent];
-
-  constructor(
-      @Inject(DOCUMENT) private _document: any,
-      private _componentFactoryResolver: ComponentFactoryResolver
-  ) { }
-
-  ngDoBootstrap(applicationRef: ApplicationRef) {
-      for (const component of AppModule.bootstrapComponents) {
-          const { selector } = this._componentFactoryResolver.resolveComponentFactory(component);
-
-          if (this._document.querySelector(selector)) {
-              applicationRef.bootstrap(component);
-          }
-      }
+export class AppModule { 
+  constructor() {}
+  ngDoBootstrap(appRef: ApplicationRef) {
+    if (Math.random() > 0.5) {
+        appRef.bootstrap(BppComponent, '#app');
+    } else {
+        appRef.bootstrap(AppComponent, '#app');
+    }
   }
 }
